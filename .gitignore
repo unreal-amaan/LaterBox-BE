@@ -3,6 +3,10 @@ node_modules/
 
 # Environment variables
 .env
+
 # Build output
 dist/
 
+#IDE configs
+.vscode
+/src/generated/prisma
