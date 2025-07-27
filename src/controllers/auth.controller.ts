@@ -1,5 +1,6 @@
 import { Profile, VerifyCallback } from "passport-google-oauth20";
 import { Request, Response } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 import generateToken from "../utils/generateToken.js";
 import { TokenPayload } from "../../global.d.js";
@@ -37,15 +38,20 @@ class AuthController {
     static handleSuccessRedirect(req: Request, res: Response): void {
         try {
             const user = req.user as TokenPayload;
-            console.info("User::", user);
+            const userPayload: TokenPayload = {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+            };
+            console.info("User::", userPayload);
 
             const accessToken = generateToken(
-                user,
+                userPayload,
                 process.env.ACCESS_TOKEN_SECRET as string,
                 process.env.ACCESS_TOKEN_EXPIRESIN as string
             );
             const refreshToken = generateToken(
-                user,
+                userPayload,
                 process.env.REFRESH_TOKEN_SECRET as string,
                 process.env.REFRESH_TOKEN_EXPIRESIN as string
             );
@@ -72,6 +78,48 @@ class AuthController {
             console.error(error);
             res.status(500).json({ error: "Internal server error" });
             return;
+        }
+    }
+
+    static async handleRefreshToken(req: Request, res: Response) {
+        try {
+            const decoded = req.user as JwtPayload;
+            const tokenPayload: TokenPayload = {
+                id: decoded.id,
+                name: decoded.name,
+                email: decoded.email,
+            }
+            console.log("decoded :: ", decoded);
+
+            const newaccessToken = generateToken(
+                tokenPayload,
+                process.env.ACCESS_TOKEN_SECRET as string,
+                process.env.ACCESS_TOKEN_EXPIRESIN as string
+            );
+            res.cookie("accessToken", newaccessToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+                maxAge: 1000 * 60,
+            });
+            return res.status(200).json({
+                message: "Access Token Refreshed",
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(401).json({ error: "Invalid Token" });
+        }
+    }
+
+    static handleLogout(req: Request, res: Response) {
+        try {
+            console.log("Logout successful");
+            res.clearCookie("accessToken");
+            res.clearCookie("refreshToken");
+            return res.status(200).json({ message: "Logout successful" });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: "Internal server error" });
         }
     }
 }
