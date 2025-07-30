@@ -1,6 +1,6 @@
 import { Profile, VerifyCallback } from "passport-google-oauth20";
 import { Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 
 import generateToken from "../utils/generateToken.js";
 import { TokenPayload } from "../../global.d.js";
@@ -27,7 +27,8 @@ class AuthController {
                         name: profile.displayName,
                     },
                 });
-                console.info("New user created: ", user);
+                console.log("New User Created");
+                console.table( user);
             }
             return done(null, user);
         } catch (err) {
@@ -43,7 +44,8 @@ class AuthController {
                 name: user.name,
                 email: user.email,
             };
-            console.info("User::", userPayload);
+            console.info("User::");
+            console.table(userPayload);
 
             const accessToken = generateToken(
                 userPayload,
@@ -55,12 +57,9 @@ class AuthController {
                 process.env.REFRESH_TOKEN_SECRET as string,
                 process.env.REFRESH_TOKEN_EXPIRESIN as string
             );
-            console.log(
-                "RefreshToken::",
-                refreshToken,
-                "\nAccessToken::",
-                accessToken
-            );
+            console.log("Access Token::   ", accessToken);
+            console.log("Refresh Token:: ", refreshToken);
+
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
                 secure: true,
@@ -89,7 +88,8 @@ class AuthController {
                 name: decoded.name,
                 email: decoded.email,
             }
-            console.log("decoded :: ", decoded);
+            console.log("decoded :: ");
+            console.table(decoded);
 
             const newaccessToken = generateToken(
                 tokenPayload,
@@ -113,9 +113,9 @@ class AuthController {
 
     static handleLogout(req: Request, res: Response) {
         try {
-            console.log("Logout successful");
             res.clearCookie("accessToken");
             res.clearCookie("refreshToken");
+            console.log("Logout successful");
             return res.status(200).json({ message: "Logout successful" });
         } catch (error) {
             console.error(error);
