@@ -13,4 +13,16 @@ userRouter.post(
     UserController.handleAddCategory
 );
 
+userRouter.delete(
+    "/deleteCategory/:id",
+    AuthMiddleware.authenticateUser,
+    UserController.handleDeleteCategory
+);
+
+userRouter.post(
+    "/updateCategory/:id",
+    AuthMiddleware.authenticateUser,
+    UserController.handleUpdateCategory
+);
+
 export default userRouter;

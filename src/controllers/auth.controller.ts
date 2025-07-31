@@ -64,13 +64,13 @@ class AuthController {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-                maxAge: 1000 * 60,
+                maxAge: 1000 * 60 * 10,
             });
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-                maxAge: 1000 * 60 * 10,
+                maxAge: 1000 * 60 * 60 * 24 * 30,
             });
             return res.redirect(process.env.CLIENT_ADDRESS as string);
         } catch (error) {
@@ -100,7 +100,7 @@ class AuthController {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-                maxAge: 1000 * 60,
+                maxAge: 1000 * 60 * 10,
             });
             return res.status(200).json({
                 message: "Access Token Refreshed",
