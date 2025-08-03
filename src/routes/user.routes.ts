@@ -28,6 +28,12 @@ userRouter.put(
     UserController.updateCategory
 );
 
+userRouter.get(
+    "/getCategories",
+    AuthMiddleware.authenticateUser,
+    UserController.getCategories
+);
+
 userRouter.post(
     "/addLink",
     AuthMiddleware.authenticateUser,
@@ -49,6 +55,16 @@ userRouter.put(
     UserController.updateLink
 );
 
+userRouter.get(
+    "/getSavedLinks",
+    AuthMiddleware.authenticateUser,
+    UserController.getSavedLinks
+);
 
-
+userRouter.get(
+    "/getSavedLinksByCategory/:id",
+    AuthMiddleware.authenticateUser,
+    OwnershipVerificationMiddleware.categoryOwnership,
+    UserController.getSavedLinksByCategory
+)
 export default userRouter;

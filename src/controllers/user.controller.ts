@@ -1,4 +1,8 @@
-import { CategoryPayload, LinkPayload, LinkUpdatePayload } from "../../global.js";
+import {
+    CategoryPayload,
+    LinkPayload,
+    LinkUpdatePayload,
+} from "../../global.js";
 import { prisma } from "../prisma.js";
 import { Request, Response } from "express";
 class UserController {
@@ -74,6 +78,27 @@ class UserController {
         }
     }
 
+    static async getCategories(req: Request, res: Response): Promise<Response> {
+        const userId = (req as any).user.id;
+        try {
+            const userCategories = await prisma.category.findMany({
+                where: {
+                    userId: userId,
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    created_at: true,
+                },
+            });
+            console.table(userCategories);
+            return res.status(200).json(userCategories);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+    }
+
     static async addLink(req: Request, res: Response): Promise<Response> {
         const userId = (req as any).user.id;
         const link: LinkPayload = req.body;
@@ -118,7 +143,7 @@ class UserController {
 
     static async updateLink(req: Request, res: Response): Promise<Response> {
         const linkId = req.params.id;
-        const newLink:LinkUpdatePayload = req.body
+        const newLink: LinkUpdatePayload = req.body;
         try {
             const updatedLink = await prisma.savedLink.update({
                 where: {
@@ -130,6 +155,69 @@ class UserController {
             return res.status(200).json({
                 message: "Link updated successfully",
             });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+    }
+
+    static async getSavedLinks(req: Request, res: Response): Promise<Response> {
+        const userId = (req as any).user.id;
+
+        try {
+            const savedLinks = await prisma.savedLink.findMany({
+                where: {
+                    userId: userId,
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    link: true,
+                    note: true,
+                    created_at: true,
+                    isPinned: true,
+                    tags: true,
+                    category: {
+                        select: {
+                            id: true,
+                            title: true,
+                            created_at: true,
+                        }
+                    }
+                },
+            });
+            console.table(savedLinks);
+            return res.status(200).json(savedLinks);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+    }
+
+    static async getSavedLinksByCategory(
+        req: Request,
+        res: Response
+    ): Promise<Response>{
+        const userId = (req as any).user.id;
+        const categoryId = req.params.id;
+        try {
+            const savedLinks = await prisma.savedLink.findMany({
+                where: {
+                    userId: userId,
+                    categoryId: categoryId,
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    link: true,
+                    note: true,
+                    created_at: true,
+                    isPinned: true,
+                    tags: true,
+                },
+            });
+            console.table(savedLinks);
+            return res.status(200).json(savedLinks);
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: "Internal server error" });
