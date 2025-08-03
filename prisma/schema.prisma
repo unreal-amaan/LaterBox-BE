@@ -36,6 +36,7 @@ model SavedLink {
   note       String
   created_at DateTime @default(now())
   isPinned   Boolean  @default(false)
+  tags String[]
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -43,14 +44,6 @@ model SavedLink {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  tags Tag[]
-
   @@unique([userId, link])
 }
 
-model Tag {
-  id    String @id @default(cuid())
-  title String @unique
-
-  savedLinks SavedLink[]
-}

@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import UserController from "../controllers/user.controller.js";
 import AuthMiddleware from "../middleware/auth.middleware.js";
+import OwnershipVerificationMiddleware from "../middleware/Verification.middleware.js";
 
 const userRouter = express.Router();
 userRouter.get("/signin", (req: Request, res: Response) => {
@@ -10,19 +11,44 @@ userRouter.get("/signin", (req: Request, res: Response) => {
 userRouter.post(
     "/addCategory",
     AuthMiddleware.authenticateUser,
-    UserController.handleAddCategory
+    UserController.addCategory
 );
 
 userRouter.delete(
     "/deleteCategory/:id",
     AuthMiddleware.authenticateUser,
-    UserController.handleDeleteCategory
+    OwnershipVerificationMiddleware.categoryOwnership,
+    UserController.deleteCategory
+);
+
+userRouter.put(
+    "/updateCategory/:id",
+    AuthMiddleware.authenticateUser,
+    OwnershipVerificationMiddleware.categoryOwnership,
+    UserController.updateCategory
 );
 
 userRouter.post(
-    "/updateCategory/:id",
+    "/addLink",
     AuthMiddleware.authenticateUser,
-    UserController.handleUpdateCategory
+    OwnershipVerificationMiddleware.categoryOwnership,
+    UserController.addLink
 );
+
+userRouter.delete(
+    "/deleteLink/:id",
+    AuthMiddleware.authenticateUser,
+    OwnershipVerificationMiddleware.linkOwnership,
+    UserController.deleteLink
+);
+
+userRouter.put(
+    "/updateLink/:id",
+    AuthMiddleware.authenticateUser,
+    OwnershipVerificationMiddleware.linkOwnership,
+    UserController.updateLink
+);
+
+
 
 export default userRouter;
