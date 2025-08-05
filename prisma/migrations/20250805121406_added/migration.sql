@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "SavedLink" ALTER COLUMN "tags" SET DEFAULT ARRAY[]::TEXT[];

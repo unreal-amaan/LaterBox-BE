@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import { type TokenPayload } from "../../global.d.js";
+import { TokenPayload } from "../validation/token.schema.js";
 export default function generateToken(
     payload: TokenPayload,
     secret: string,

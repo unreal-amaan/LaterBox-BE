@@ -1,16 +1,26 @@
+
+
+
 export type TokenPayload = {
     id: string;
     name: string;
     email: string;
 } 
 
-export type CategoryPayload = {
-    title?: string,
-    created_at: Date,
+export type CreateCategoryPayload = {
+    title: string,
+    created_at?: Date,
+    isPinned: boolean,
+    isPublic: boolean,
     userId: string
 }
 
-export type LinkPayload = {
+export type UpdateCategoryPayload = {
+    title?: string;
+    isPinned?: boolean;
+    isPublic?: boolean;
+};
+export type CreateLinkPayload = {
     title: string,
     link: string,
     note: string,
@@ -21,10 +31,10 @@ export type LinkPayload = {
     tags: string[]
 }
 
-export type LinkUpdatePayload = {
-    title?: string,
-    link?: string,
-    note?: string,
-    isPinned?: boolean,
-    tags?: string[]
-}
+export type UpdateLinkPayload = {
+    title?: string;
+    link?: string;
+    note?: string;
+    isPinned?: boolean;
+    tags?: string[];
+};

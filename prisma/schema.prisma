@@ -9,10 +9,10 @@ datasource db {
 }
 
 model User {
-  id         String      @id @default(cuid())
-  name       String?
-  email      String      @unique
-  google_id  String
+  id        String  @id @default(cuid())
+  name      String?
+  email     String  @unique
+  google_id String
 
   category   Category[]
   savedLinks SavedLink[]
@@ -20,8 +20,11 @@ model User {
 
 model Category {
   id         String      @id @default(cuid())
-  title      String?
-  created_at DateTime    @default(now())
+  title      String
+  created_at DateTime?   @default(now())
+  isPinned   Boolean     @default(false)
+  isPublic   Boolean     @default(true)
+  shareLink  String?     @unique
   userId     String
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   savedLinks SavedLink[]
@@ -33,10 +36,10 @@ model SavedLink {
   id         String   @id @default(cuid())
   title      String
   link       String
-  note       String
-  created_at DateTime @default(now())
+  note       String   @default("")
+  created_at DateTime? @default(now())
   isPinned   Boolean  @default(false)
-  tags String[]
+  tags       String[] @default([])
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -46,4 +49,3 @@ model SavedLink {
 
   @@unique([userId, link])
 }
-

@@ -4,8 +4,10 @@ import passport from "passport";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import categoryRouter from "./routes/user.routes/category.routes.js";
+import linkRouter from "./routes/user.routes/link.routes.js";
+
 import "./config/Oauth.config.js";
 
 dotenv.config();
@@ -19,7 +21,8 @@ app.use(
     })
 );
 app.use(passport.initialize());
-app.use("/api/user", userRouter);
+app.use("/api/category", categoryRouter);
+app.use("/api/link", linkRouter);
 app.use("/api/auth", authRouter);
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);

@@ -1,0 +1,179 @@
+import {
+    createCategorySchema,
+    updateCategorySchema,
+} from "../validation/category.schema.js";
+import { prisma } from "../prisma.js";
+import { Request, Response } from "express";
+import { customAlphabet } from "nanoid";
+
+const nanoid = customAlphabet(
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    12
+);
+
+class CategoryController {
+    static async addCategory(req: Request, res: Response): Promise<Response> {
+        const userId = (req as any).user.id;
+        const parsedBody = createCategorySchema.safeParse(req.body);
+        if (!parsedBody.success) {
+            return res
+                .status(400)
+                .json({ error: parsedBody.error.issues[0].message });
+        }
+        const category = parsedBody.data;
+
+        const shareLink = nanoid();
+        try {
+            const newCategory = await prisma.category.create({
+                data: {
+                    ...category,
+                    userId,
+                    shareLink,
+                },
+            });
+            console.table(newCategory);
+            return res
+                .status(201)
+                .json({ message: "Category created successfully" });
+        } catch (error) {
+            console.error(error);
+            if ((error as any).code === "P2002")
+                return res
+                    .status(409)
+                    .json({ error: "Category already exists" });
+            return res.status(500).json({ error: "Internal server error" });
+        }
+    }
+
+    static async deleteCategory(
+        req: Request,
+        res: Response
+    ): Promise<Response> {
+        const categoryId = req.params.id;
+
+        try {
+            const deletedCategory = await prisma.category.delete({
+                where: {
+                    id: categoryId,
+                },
+            });
+            console.table(deletedCategory);
+
+            return res
+                .status(200)
+                .json({ message: "Category deleted successfully" });
+        } catch (error) {
+            console.log(error);
+            if ((error as any).code === "P2025") {
+                return res.status(404).json({ error: "Category not found" });
+            }
+            return res.status(500).json({ error: "Internal server error" });
+        }
+    }
+
+    static async updateCategory(
+        req: Request,
+        res: Response
+    ): Promise<Response> {
+        const categoryId = req.params.id;
+        const parsedBody = updateCategorySchema.safeParse(req.body);
+        if (!parsedBody.success) {
+            return res
+                .status(400)
+                .json({ error: parsedBody.error.issues[0].message });
+        }
+        const category = parsedBody.data;
+        try {
+            await prisma.category.update({
+                where: {
+                    id: categoryId,
+                },
+                data: category,
+            });
+            return res.status(200).json({
+                message: "Category updated successfully",
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+    }
+
+    static async getCategories(req: Request, res: Response): Promise<Response> {
+        const userId = (req as any).user.id;
+        try {
+            const userCategories = await prisma.category.findMany({
+                where: {
+                    userId: userId,
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    created_at: true,
+                },
+            });
+            if (userCategories.length === 0)
+                return res.status(404).json({
+                    message: "You have not created any categories yet",
+                    categories: [],
+                });
+
+            console.table(userCategories);
+            return res.status(200).json(userCategories);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+    }
+
+    static async getSharedCategory(
+        req: Request,
+        res: Response
+    ): Promise<Response> {
+        const categoryLink = req.params.id;
+        try {
+            const sharedCategory = await prisma.category.findFirst({
+                where: {
+                    shareLink: categoryLink,
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    created_at: true,
+                    isPublic: true,
+                    user: {
+                        select: {
+                            name: true,
+                            email: true,
+                        },
+                    },
+                    savedLinks: {
+                        select: {
+                            title: true,
+                            link: true,
+                            note: true,
+                            created_at: true,
+                            isPinned: true,
+                            tags: true,
+                        },
+                    },
+                },
+            });
+            if (!sharedCategory)
+                return res.status(404).json({ error: "Invalid link" });
+            if (!sharedCategory.isPublic)
+                return res
+                    .status(403)
+                    .json({
+                        error: "This category is private and cannot be accessed",
+                    });
+            console.table(sharedCategory);
+            return res.status(200).json(sharedCategory);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: "Internal server error" });
+        }
+    }
+}
+
+export default CategoryController;

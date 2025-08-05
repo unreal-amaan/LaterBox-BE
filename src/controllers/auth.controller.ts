@@ -2,8 +2,8 @@ import { Profile, VerifyCallback } from "passport-google-oauth20";
 import { Request, Response } from "express";
 import { JwtPayload } from "jsonwebtoken";
 
+import { tokenSchema } from "../validation/token.schema.js";
 import generateToken from "../utils/generateToken.js";
-import { TokenPayload } from "../../global.d.js";
 import { prisma } from "../prisma.js";
 class AuthController {
     static async handleGoogleLogin(
@@ -28,7 +28,7 @@ class AuthController {
                     },
                 });
                 console.log("New User Created");
-                console.table( user);
+                console.table(user);
             }
             return done(null, user);
         } catch (err) {
@@ -38,12 +38,14 @@ class AuthController {
     }
     static handleSuccessRedirect(req: Request, res: Response): void {
         try {
-            const user = req.user as TokenPayload;
-            const userPayload: TokenPayload = {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-            };
+            const parsedBody = tokenSchema.safeParse(req.user);
+            if (!parsedBody.success) {
+                res.status(400).json({
+                    error: parsedBody.error.issues[0].message,
+                });
+                return;
+            }
+            const userPayload = parsedBody.data;
             console.info("User::");
             console.table(userPayload);
 
@@ -82,17 +84,19 @@ class AuthController {
 
     static async handleRefreshToken(req: Request, res: Response) {
         try {
-            const decoded = req.user as JwtPayload;
-            const tokenPayload: TokenPayload = {
-                id: decoded.id,
-                name: decoded.name,
-                email: decoded.email,
+            const parsedBody = tokenSchema.safeParse(req.user);
+            if (!parsedBody.success) {
+                res.status(400).json({
+                    error: parsedBody.error.issues[0].message,
+                });
+                return;
             }
+            const userPayload = parsedBody.data;
             console.log("decoded :: ");
-            console.table(decoded);
+            console.table(userPayload);
 
             const newaccessToken = generateToken(
-                tokenPayload,
+                userPayload,
                 process.env.ACCESS_TOKEN_SECRET as string,
                 process.env.ACCESS_TOKEN_EXPIRESIN as string
             );
