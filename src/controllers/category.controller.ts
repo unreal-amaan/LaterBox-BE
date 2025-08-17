@@ -110,6 +110,11 @@ class CategoryController {
                     id: true,
                     title: true,
                     created_at: true,
+                    _count: {
+                        select: {
+                            savedLinks: true,
+                        }
+                    }
                 },
             });
             if (userCategories.length === 0)

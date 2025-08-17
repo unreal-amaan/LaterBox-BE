@@ -8,7 +8,7 @@ authRouter.get(
     passport.authenticate("google", {
         scope: ["email", "profile", "openid"],
         session: false,
-        failureRedirect: "/api/user/signin", //change the route to FE signin page
+        failureRedirect: `${process.env.CLIENT_ADDRESS}/signin?error=auth_failed`, 
     })
 );
 
@@ -16,7 +16,7 @@ authRouter.get(
     "/google/callback",
     passport.authenticate("google", {
         session: false,
-        failureRedirect: "/api/user/signin", //change the route to FE signin page
+        failureRedirect: `${process.env.CLIENT_ADDRESS}/signin?error=auth_failed`, 
     }),
     AuthController.handleSuccessRedirect
 );

@@ -16,18 +16,18 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
     cors({
-        origin: process.env.CLIENT_URL,
+        origin: process.env.CLIENT_ADDRESS,
         credentials: true,
     })
 );
-app.use(passport.initialize());
-app.use("/api/category", categoryRouter);
-app.use("/api/link", linkRouter);
-app.use("/api/auth", authRouter);
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url}`);
     next();
 });
+app.use(passport.initialize());
+app.use("/api/auth", authRouter);
+app.use("/api/category", categoryRouter);
+app.use("/api/link", linkRouter);
 
 app.listen(process.env.PORT , () => {
     console.log(`Server is running on http://localhost:${process.env.PORT}`);

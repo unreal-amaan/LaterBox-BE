@@ -1,6 +1,5 @@
 import { Profile, VerifyCallback } from "passport-google-oauth20";
 import { Request, Response } from "express";
-import { JwtPayload } from "jsonwebtoken";
 
 import { tokenSchema } from "../validation/token.schema.js";
 import generateToken from "../utils/generateToken.js";
@@ -66,15 +65,15 @@ class AuthController {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-                maxAge: 1000 * 60 * 10,
+                maxAge: 1000 * 60 * 3,
             });
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-                maxAge: 1000 * 60 * 60 * 24 * 30,
+                maxAge: 1000 * 60 * 10,
             });
-            return res.redirect(process.env.CLIENT_ADDRESS as string);
+            return res.redirect(`${process.env.CLIENT_ADDRESS}/home`);
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: "Internal server error" });
@@ -104,7 +103,7 @@ class AuthController {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
-                maxAge: 1000 * 60 * 10,
+                maxAge: 1000 * 60 * 3,
             });
             return res.status(200).json({
                 message: "Access Token Refreshed",
