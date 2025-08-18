@@ -29,7 +29,7 @@ authRouter.post(
 
 authRouter.post(
     "/signout",
-    AuthMiddleware.authenticateUser,
+    // AuthMiddleware.authenticateUser,
     AuthController.handleLogout
 );
 
