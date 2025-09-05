@@ -5,6 +5,7 @@ import {
 import { prisma } from "../prisma.js";
 import { Request, Response } from "express";
 import { customAlphabet } from "nanoid";
+import { Category } from "../../global.js";
 
 const nanoid = customAlphabet(
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -100,7 +101,7 @@ class CategoryController {
     }
 
     static async getCategories(req: Request, res: Response): Promise<Response> {
-        const userId = (req as any).user.id;
+        const userId = (req as any)?.user?.id;
         try {
             const userCategories = await prisma.category.findMany({
                 where: {
@@ -110,21 +111,30 @@ class CategoryController {
                     id: true,
                     title: true,
                     created_at: true,
+                    isPinned: true,
+                    isPublic: true,
+                    shareLink: true,
                     _count: {
                         select: {
                             savedLinks: true,
-                        }
-                    }
+                        },
+                    },
                 },
+                orderBy: { created_at: "desc" },
             });
-            if (userCategories.length === 0)
-                return res.status(404).json({
-                    message: "You have not created any categories yet",
-                    categories: [],
-                });
-
-            console.table(userCategories);
-            return res.status(200).json(userCategories);
+            const categories: Category[] = userCategories.map((c) => {
+                return {
+                    id: c.id,
+                    title: c.title,
+                    created_at: c.created_at? c.created_at.toISOString(): "",
+                    isPinned: c.isPinned,
+                    isPublic: c.isPublic,
+                    shareLink: c.shareLink ?? null,
+                    count: c._count.savedLinks ?? 0,
+                };
+            })
+            console.table(categories);
+            return res.status(200).json( categories);
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: "Internal server error" });
