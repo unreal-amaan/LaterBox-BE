@@ -110,6 +110,7 @@ class CategoryController {
                 select: {
                     id: true,
                     title: true,
+                    description: true,
                     created_at: true,
                     isPinned: true,
                     isPublic: true,
@@ -120,12 +121,13 @@ class CategoryController {
                         },
                     },
                 },
-                orderBy: { created_at: "desc" },
+                orderBy: { isPinned: "desc" },
             });
             const categories: Category[] = userCategories.map((c) => {
                 return {
                     id: c.id,
                     title: c.title,
+                    description: c.description,
                     created_at: c.created_at? c.created_at.toISOString(): "",
                     isPinned: c.isPinned,
                     isPublic: c.isPublic,

@@ -10,6 +10,7 @@ export type TokenPayload = {
 export type Category = {
     id: string;
     title: string;
+    description: string | null;
     created_at: string;
     isPinned: boolean;
     isPublic: boolean;
@@ -19,6 +20,7 @@ export type Category = {
 
 export type CreateCategoryPayload = {
     title: string,
+    description?: string | null,
     created_at?: Date,
     isPinned: boolean,
     isPublic: boolean,
@@ -27,6 +29,7 @@ export type CreateCategoryPayload = {
 
 export type UpdateCategoryPayload = {
     title?: string;
+    description?: string | null;
     isPinned?: boolean;
     isPublic?: boolean;
 };
