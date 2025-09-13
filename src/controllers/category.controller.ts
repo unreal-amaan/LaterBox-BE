@@ -41,8 +41,8 @@ class CategoryController {
             if ((error as any).code === "P2002")
                 return res
                     .status(409)
-                    .json({ error: "Category already exists" });
-            return res.status(500).json({ error: "Internal server error" });
+                    .json({ message: "Category already exists" });
+            return res.status(500).json({ message: "Internal server error" });
         }
     }
 
@@ -66,9 +66,9 @@ class CategoryController {
         } catch (error) {
             console.log(error);
             if ((error as any).code === "P2025") {
-                return res.status(404).json({ error: "Category not found" });
+                return res.status(404).json({ message: "Category not found" });
             }
-            return res.status(500).json({ error: "Internal server error" });
+            return res.status(500).json({ message: "Internal server error" });
         }
     }
 
@@ -96,7 +96,7 @@ class CategoryController {
             });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: "Internal server error" });
+            return res.status(500).json({ message: "Internal server error" });
         }
     }
 
@@ -123,12 +123,12 @@ class CategoryController {
                 },
                 orderBy: { isPinned: "desc" },
             });
-            const categories: Category[] = userCategories.map((c) => {
+            const categories: Category[] = userCategories.map((c:any) => {
                 return {
                     id: c.id,
                     title: c.title,
                     description: c.description,
-                    created_at: c.created_at? c.created_at.toISOString(): "",
+                    created_at: c.created_at ? c.created_at.toISOString(): "",
                     isPinned: c.isPinned,
                     isPublic: c.isPublic,
                     shareLink: c.shareLink ?? null,
@@ -139,7 +139,7 @@ class CategoryController {
             return res.status(200).json( categories);
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: "Internal server error" });
+            return res.status(500).json({ message: "Internal server error" });
         }
     }
 
@@ -177,18 +177,18 @@ class CategoryController {
                 },
             });
             if (!sharedCategory)
-                return res.status(404).json({ error: "Invalid link" });
+                return res.status(404).json({ message: "Invalid link" });
             if (!sharedCategory.isPublic)
                 return res
                     .status(403)
                     .json({
-                        error: "This category is private and cannot be accessed",
+                        message: "This category is private and cannot be accessed",
                     });
             console.table(sharedCategory);
             return res.status(200).json(sharedCategory);
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: "Internal server error" });
+            return res.status(500).json({ message: "Internal server error" });
         }
     }
 }
