@@ -35,7 +35,7 @@ class CategoryController {
             console.table(newCategory);
             return res
                 .status(201)
-                .json({ message: "Category created successfully" });
+                .json(newCategory);
         } catch (error) {
             console.error(error);
             if ((error as any).code === "P2002")
@@ -62,7 +62,7 @@ class CategoryController {
 
             return res
                 .status(200)
-                .json({ message: "Category deleted successfully" });
+                .json(deletedCategory);
         } catch (error) {
             console.log(error);
             if ((error as any).code === "P2025") {
@@ -85,15 +85,13 @@ class CategoryController {
         }
         const category = parsedBody.data;
         try {
-            await prisma.category.update({
+            const updatedCategory = await prisma.category.update({
                 where: {
                     id: categoryId,
                 },
                 data: category,
             });
-            return res.status(200).json({
-                message: "Category updated successfully",
-            });
+            return res.status(200).json(updatedCategory);
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: "Internal server error" });
