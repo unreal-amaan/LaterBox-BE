@@ -27,13 +27,10 @@ linkRouter.put(
 );
 
 linkRouter.get(
-    "/getLinks",
+    "/get/:id",
     AuthMiddleware.authenticateUser,
     LinkController.getSavedLinks
 );
-
-
-
 
 
 export default linkRouter;

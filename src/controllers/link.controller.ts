@@ -20,9 +20,7 @@ class LinkController {
                 data: { ...link, userId },
             });
             console.table(newLink);
-            return res.status(201).json({
-                message: "Link created successfully",
-            });
+            return res.status(201).json(newLink);
         } catch (error) {
             console.error(error);
             if ((error as any).code === "P2002")
@@ -81,7 +79,7 @@ class LinkController {
 
     static async getSavedLinks(req: Request, res: Response): Promise<Response> {
         const userId = (req as any).user.id;
-        const categoryId = req.query.categoryId as string;
+        const categoryId = req.params.id as string;
 
         try {
             const savedLinks = await prisma.savedLink.findMany({
@@ -94,9 +92,9 @@ class LinkController {
                     title: true,
                     link: true,
                     note: true,
-                    created_at: true,
                     isPinned: true,
                     tags: true,
+                    created_at: true,
                     category: {
                         select: {
                             id: true,
