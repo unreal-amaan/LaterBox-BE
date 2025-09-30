@@ -9,6 +9,10 @@ class LinkController {
     static async addLink(req: Request, res: Response): Promise<Response> {
         const userId = (req as any).user.id;
         const parsedBody = createLinkSchema.safeParse(req.body);
+        console.log("req body:");
+        console.table(req.body);
+        console.log("parsed body:");
+        console.table(parsedBody.data);
         if (!parsedBody.success) {
             return res
                 .status(400)
@@ -41,7 +45,7 @@ class LinkController {
             console.table(deletedLink);
             return res
                 .status(200)
-                .json({ message: "Link deleted successfully" });
+                .json(deletedLink);
         } catch (error) {
             console.error(error);
             if ((error as any).code === "P2025") {
@@ -68,9 +72,7 @@ class LinkController {
                 data: newLink,
             });
             console.table(updatedLink);
-            return res.status(200).json({
-                message: "Link updated successfully",
-            });
+            return res.status(200).json(updatedLink);
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: "Internal server error" });
@@ -99,6 +101,7 @@ class LinkController {
                         select: {
                             id: true,
                             title: true,
+                            description: true,
                         },
                     },
                 },
