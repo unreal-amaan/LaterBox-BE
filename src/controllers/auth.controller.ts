@@ -63,7 +63,7 @@ class AuthController {
 
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
-                domain: process.env.CLIENT_ADDRESS,
+                domain: process.env.DOMAIN,
                 path: "/",
                 secure: true,
                 sameSite:"none",
@@ -71,7 +71,7 @@ class AuthController {
             });
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
-                domain: process.env.CLIENT_ADDRESS,
+                domain: process.env.DOMAIN,
                 path: "/",
                 secure: true,
                 sameSite:"none",
@@ -105,7 +105,7 @@ class AuthController {
             );
             res.cookie("accessToken", newaccessToken, {
                 httpOnly: true,
-                domain: process.env.CLIENT_ADDRESS,
+                domain: process.env.DOMAIN,
                 path: "/",
                 secure: true,
                 sameSite:"none",
