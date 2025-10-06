@@ -63,37 +63,41 @@ class AuthController {
 
             res.cookie("accessToken", accessToken, {
                 httpOnly: true,
+                domain: process.env.CLIENT_ADDRESS,
+                path: "/",
                 secure: true,
-                sameSite: "none",
+                sameSite:"none",
                 maxAge: 1000 * 60 * 15,
             });
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
+                domain: process.env.CLIENT_ADDRESS,
+                path: "/",
                 secure: true,
-                sameSite: "none",
+                sameSite:"none",
                 maxAge: 1000 * 60 * 60 * 24 * 365,
             });
             return res.redirect(`${process.env.CLIENT_ADDRESS}/home`);
         } catch (error) {
-            console.error(error);
-            res.status(500).json({ error: "Internal server error" });
-            return;
-        }
-    }
-
-    static async handleRefreshToken(req: Request, res: Response) {
-        try {
-            const parsedBody = tokenSchema.safeParse(req.user);
-            if (!parsedBody.success) {
-                res.status(400).json({
-                    error: parsedBody.error.issues[0].message,
-                });
+                console.error(error);
+                res.status(500).json({ error: "Internal server error" });
                 return;
             }
-            const userPayload = parsedBody.data;
-            console.log("decoded :: ");
+        }
+        
+        static async handleRefreshToken(req: Request, res: Response) {
+            try {
+                const parsedBody = tokenSchema.safeParse(req.user);
+                if (!parsedBody.success) {
+                    res.status(400).json({
+                        error: parsedBody.error.issues[0].message,
+                    });
+                    return;
+                }
+                const userPayload = parsedBody.data;
+                console.log("decoded :: ");
             console.table(userPayload);
-
+            
             const newaccessToken = generateToken(
                 userPayload,
                 process.env.ACCESS_TOKEN_SECRET as string,
@@ -101,8 +105,10 @@ class AuthController {
             );
             res.cookie("accessToken", newaccessToken, {
                 httpOnly: true,
+                domain: process.env.CLIENT_ADDRESS,
+                path: "/",
                 secure: true,
-                sameSite: "none",
+                sameSite:"none",
                 maxAge: 1000 * 60 * 15,
             });
             return res.status(200).json({

@@ -7,8 +7,8 @@ import cors from "cors";
 import authRouter from "./routes/auth.routes.js";
 import categoryRouter from "./routes/user.routes/category.routes.js";
 import linkRouter from "./routes/user.routes/link.routes.js";
-
 import "./config/Oauth.config.js";
+
 
 dotenv.config();
 const app = express();

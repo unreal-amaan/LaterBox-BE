@@ -1,9 +1,10 @@
+import { Request, Response } from "express";
+
 import {
     createLinkSchema,
     updateLinkSchema,
 } from "../validation/link.schema.js";
 import { prisma } from "../prisma.js";
-import { Request, Response } from "express";
 
 class LinkController {
     static async addLink(req: Request, res: Response): Promise<Response> {
@@ -43,9 +44,7 @@ class LinkController {
                 },
             });
             console.table(deletedLink);
-            return res
-                .status(200)
-                .json(deletedLink);
+            return res.status(200).json(deletedLink);
         } catch (error) {
             console.error(error);
             if ((error as any).code === "P2025") {

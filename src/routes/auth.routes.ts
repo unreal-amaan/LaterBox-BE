@@ -1,5 +1,6 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import passport from "passport";
+
 import AuthController from "../controllers/auth.controller.js";
 import AuthMiddleware from "../middleware/auth.middleware.js";
 const authRouter = express.Router();
@@ -29,7 +30,6 @@ authRouter.post(
 
 authRouter.post(
     "/signout",
-    // AuthMiddleware.authenticateUser,
     AuthController.handleLogout
 );
 

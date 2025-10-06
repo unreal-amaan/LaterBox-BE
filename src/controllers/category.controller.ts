@@ -1,10 +1,11 @@
+import { Request, Response } from "express";
+import { customAlphabet } from "nanoid";
+
 import {
     createCategorySchema,
     updateCategorySchema,
 } from "../validation/category.schema.js";
 import { prisma } from "../prisma.js";
-import { Request, Response } from "express";
-import { customAlphabet } from "nanoid";
 import { Category } from "../../global.js";
 
 const nanoid = customAlphabet(
@@ -155,6 +156,7 @@ class CategoryController {
                     id: true,
                     title: true,
                     created_at: true,
+                    description: true,
                     isPublic: true,
                     user: {
                         select: {
@@ -178,7 +180,7 @@ class CategoryController {
                 return res.status(404).json({ message: "Invalid link" });
             if (!sharedCategory.isPublic)
                 return res
-                    .status(403)
+                    .status(404)
                     .json({
                         message: "This category is private and cannot be accessed",
                     });
