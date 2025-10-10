@@ -48,7 +48,7 @@ LaterBox Backend is a robust Node.js API built with TypeScript, Express, and Pri
 
 3. **Environment Setup**
    Create a `.env` file in the root directory:
-
+    ```env
    DATABASE_URL=
    ACCESS_TOKEN_SECRET=
    REFRESH_TOKEN_SECRET=
@@ -61,7 +61,7 @@ LaterBox Backend is a robust Node.js API built with TypeScript, Express, and Pri
    DOMAIN="localhost"
    CLIENT_ADDRESS="http://localhost:5173"
    NODE_ENV="development"
-
+    ```
 
 4. **Database Setup**
 
